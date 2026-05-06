@@ -1,0 +1,57 @@
+﻿# ----------------------
+# OS / Editor junk
+# ----------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+
+# ----------------------
+# Visual Studio
+# ----------------------
+.vs/
+*.user
+*.suo
+
+# ----------------------
+# .NET / C#
+# ----------------------
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+
+# Rider / VS Code (optional)
+.idea/
+.vscode/
+
+# ----------------------
+# Node / Frontend
+# ----------------------
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# ----------------------
+# Environment / Secrets
+# ----------------------
+.env
+.env.*
+appsettings.Development.json
+
+# ----------------------
+# Logs
+# ----------------------
+logs/
+*.log
+
+# ----------------------
+# Database / local files
+# ----------------------
+*.db
+*.sqlite
+*.sqlite3

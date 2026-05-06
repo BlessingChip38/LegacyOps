@@ -1,0 +1,6 @@
+@LegayOps_HostAddress = http://localhost:5267
+
+GET {{LegacyOps_HostAddress}}
+Accept: application/json
+
+###
