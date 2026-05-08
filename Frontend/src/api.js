@@ -1,3 +1,4 @@
-// const API_BASE = "http://localhost:5149";
-const API_BASE = "https://api.legacyearthworks.us"
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 export default API_BASE;
+

@@ -11,6 +11,7 @@ import TimeClockTab from "./tabs/TimeClockTab.jsx";
 import LoginScreen from "./components/LoginScreen.jsx";
 import ChangePasswordScreen from "./components/ChangePasswordScreen.jsx";
 import AdminTab from "./tabs/AdminTab.jsx";
+import API_BASE from "./api.js";
 
 // ─── TABS ───────────────────────────────────────────────
 const TABS = [
@@ -91,7 +92,6 @@ export default function App() {
   const refreshData = () => {
     loadAllData(auth);
   };
-
   // ─── AUTH GATES ────────────────────────────────────
   if (!auth) return <LoginScreen onLogin={handleLogin} />;
 
