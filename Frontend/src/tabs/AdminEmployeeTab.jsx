@@ -131,7 +131,7 @@ export default function EmployeeSection({ employees, onDataChange, auth }) {
                     </div>
                     <div style={{ flex: 1 }}>
                         <div style={{ color: "#e2e8f0", fontWeight: 600, fontSize: 13 }}>{e.firstName} {e.lastName}</div>
-                        <div style={{ color: "#64748b", fontSize: 11 }}>@{e.username} · {e.id}</div>
+                        <div style={{ color: "#64748b", fontSize: 11 }}>@{e.username}</div>
                     </div>
                     <select
                         value={e.role}

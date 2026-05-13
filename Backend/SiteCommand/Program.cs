@@ -3,15 +3,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using LegacyOps.Repositories;
 using System.Text;
+using LegacyOps.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddControllers()
-    .AddJsonOptions( options=> 
-     {
-         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-     });
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter()
+        );
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -84,6 +87,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+builder.WebHost.UseUrls("http://0.0.0.0:5001");
+
 var app = builder.Build();
 
 // Middleware
@@ -94,10 +100,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-//app.UseCors("AllowAll");
-//app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+app.MapGet("/test", () => "LegacyOps API Running");
 
 app.Run();

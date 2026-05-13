@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fmtTime } from "../utils.js";
+import { daysDiff, fmtTime } from "../utils.js";
 import { btnStyle, selectStyle, avatarStyle } from "../styles/shared.js";
 import SectionHeader from "../components/SectionHeader";
 import { request } from "../api/client.js";
@@ -31,13 +31,14 @@ export default function TimeClockTab({
     }
 
     const alreadyIn = punchRecords.some(
-      p => p.empId === selEmp && !p.punchOut
+      p => p.empId === Number(selEmp) && !p.punchOut
     );
 
     if (alreadyIn) {
       setMsg({ type: "err", text: "Already clocked in." });
       return;
     }
+    
 
      try {
     await request(
@@ -59,7 +60,7 @@ export default function TimeClockTab({
   try {
       await request(
         `/api/PunchCard/${id}/clockout`,
-        "PATCH",
+        "POST",
         auth
       );
 
@@ -69,11 +70,16 @@ export default function TimeClockTab({
       console.error(err);
     }
   };
+  // ─── Date Helper Function ──────────────────────────
+
+
 
   // ─── ACTIVE / COMPLETED DATA ──────────────────────────
   const active = punchRecords.filter(p => !p.punchOut);
-  const completed = punchRecords.filter(p => p.punchOut);
-
+  const completed = punchRecords.filter(p => 
+    p.punchOut && daysDiff(p.punchOut, new Date()) === 0
+  );
+  
   // ─── UI ───────────────────────────────────────────────  return (
   return(
   <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -92,13 +98,16 @@ export default function TimeClockTab({
         </div>
         {msg && <div style={{ color: msg.type === "ok" ? "#10b981" : "#ef4444", fontSize: 12, padding: "6px 10px", background: msg.type === "ok" ? "#10b98122" : "#ef444422", borderRadius: 6 }}>{msg.text}</div>}
       </div>
-
+ 
       <div style={{ background: "#111c30", borderRadius: 10, border: "1px solid #1e2d47", padding: 16 }}>
         <SectionHeader title="Active Punches"/>
-        {punchRecords.filter(p => !p.punchOut).map(p => {
+        {active.map(p => {
           const emp = employees.find(e => e.id === p.empId);
           const job = jobs.find(j => j.id === p.jobId);
-          const elapsed = ((new Date() - new Date(p.punchIn)) / 3600000).toFixed(1);
+          
+          const elapsedMs = Math.max(0,Date.now() - new Date(p.punchIn).getTime());
+         
+          const elapsed = (elapsedMs / 3600000).toFixed(1);
           return (
             <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid #1e2d4755" }}>
               <div style={avatarStyle}>{emp?.avatar}</div>
@@ -116,14 +125,14 @@ export default function TimeClockTab({
 
       <div style={{ background: "#111c30", borderRadius: 10, border: "1px solid #1e2d47", padding: 16 }}>
         <SectionHeader title="Today's Completed Records"/>
-        {punchRecords.filter(p => p.punchOut).map(p => {
+        {completed.map(p => {
           const emp = employees.find(e => e.id === p.empId);
           const job = jobs.find(j => j.id === p.jobId);
           return (
             <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 0", borderBottom: "1px solid #1e2d4755" }}>
               <div style={{ ...avatarStyle, opacity: 0.6 }}>{emp?.avatar}</div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: "#94a3b8", fontSize: 13 }}>{emp?.name} — {job?.name}</div>
+                <div style={{ color: "#94a3b8", fontSize: 13 }}>{emp?.firstName} — {job?.name}</div>
                 <div style={{ color: "#64748b", fontSize: 11 }}>{fmtTime(p.punchIn)} → {fmtTime(p.punchOut)}</div>
               </div>
               <div style={{ color: "#94a3b8", fontFamily: "monospace", fontSize: 13 }}>{p.totalHours}h</div>

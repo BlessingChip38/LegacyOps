@@ -1,4 +1,4 @@
-import { today, fmtDate } from "../utils.js";
+import { fmtDate, daysDiff } from "../utils.js";
 import { btnStyle, selectStyle } from "../styles/shared.js"
 import { useState, useEffect } from "react";
 import Badge from "../components/Badge";
@@ -31,7 +31,8 @@ export default function MachinesTab({ jobs = [], machines: initialMachines = [],
 
   // ─── Mark Equipment Greased ─────────────────────────────
   const markGreased = async (id) => {
-    var today = new Date().toISOString();
+    var today = new Date();
+    console.log("Today: ", today);
     try{
 
       await request(
@@ -145,7 +146,7 @@ export default function MachinesTab({ jobs = [], machines: initialMachines = [],
   };
   
   const selectedMachine = machines.find(m => m.id === newOp.machineId);
-
+  const today = new Date();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ background: "#111c30", borderRadius: 10, border: "1px solid #1e2d47", padding: 16 }}>
@@ -169,14 +170,14 @@ export default function MachinesTab({ jobs = [], machines: initialMachines = [],
          {msg && <div style={{ color: msg.type === "ok" ? "#10b981" : "#ef4444", fontSize: 12, padding: "6px 10px", background: msg.type === "ok" ? "#10b98122" : "#ef444422", borderRadius: 6 }}>{msg.text}</div>}
          
         </div>
-
+      
       {machines.map(m => {
         const hoursToService = m.serviceInterval - (m.hours - m.lastServiceHours);
         const pct = Math.min(100, ((m.hours - m.lastServiceHours) / m.serviceInterval) * 100);
         const barColor = pct > 90 ? "#ef4444" : pct > 70 ? "#f59e0b" : "#10b981";
-        const greaseDays = Math.floor(
-              (new Date().setHours(0,0,0,0) - new Date(m.lastGreased).setHours(0,0,0,0)) / 86400000
-              );
+        const greasedDate = new Date(m.lastGreased);
+
+        const greaseDays = daysDiff(greasedDate, today);
         const activeRun = log.find(l => l.machineId === m.id && !l.end);
         const operator = activeRun ? employees.find(e => e.id === activeRun.empId) : null;
         const job = activeRun ? jobs.find(j => j.id === activeRun.jobId) : null;

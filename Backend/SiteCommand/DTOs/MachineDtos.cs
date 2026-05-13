@@ -8,9 +8,9 @@ namespace LegacyOps.DTOs
         public string? Name { get; set; }
         public string? Serial { get; set; }
         public decimal Hours { get; set; }
-        public DateTimeOffset? LastGreased { get; set; }
+        public DateTime LastGreased { get; set; }
         public int ServiceInterval { get; set; }
-        public DateTimeOffset? LastServiceDate { get; set; }
+        public DateTime LastServiceDate { get; set; }
         public int LastServiceHours { get; set; }
         public MachineStatus Status { get; set; }
 

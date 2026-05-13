@@ -22,6 +22,10 @@ namespace LegacyOps.Repositories
             var machines = await connection.QueryAsync<MachineResponse>(
                 "SELECT * FROM machines"
                 );
+            foreach(var machine in machines)
+            {
+                Normalize(machine);
+            }
             return machines;
         }
 
@@ -32,6 +36,10 @@ namespace LegacyOps.Repositories
                 "SELECT * FROM machines WHERE id = @Id",
                 new { Id = id }
                 );
+            if (machine != null) 
+            { 
+                Normalize(machine); 
+            }
             return machine;
         }
 
@@ -42,6 +50,10 @@ namespace LegacyOps.Repositories
                 "SELECT * FROM machines WHERE jobId = @JobId",
                 new { JobId = jobId }
                 );
+            foreach(var machine in machines)
+            {
+                Normalize(machine);
+            }
             return machines;
         }
 
@@ -50,16 +62,17 @@ namespace LegacyOps.Repositories
             using var connection = new MySqlConnection(_connectionString);
 
             var status = MachineStatus.idle;
-
+            var today = DateTime.UtcNow;
             await connection.ExecuteAsync(
-                "INSERT INTO machines (name, serial, hours, serviceInterval, lastServiceDate, lastServiceHours, status) VALUES (@Name, @Serial, @Hours, @ServiceInterval, @LastServiceDate, @LastServiceHours, @Status)",
+                "INSERT INTO machines (name, serial, hours, lastGreased, serviceInterval, lastServiceDate, lastServiceHours,  status) VALUES (@Name, @Serial, @Hours, @LastGreased, @ServiceInterval, @LastServiceDate, @LastServiceHours, @Status)",
                 new
                 {
                     Name = request.Name,
                     Serial = request.Serial,
                     Hours = request.Hours,
+                    LastGreased = today,
                     ServiceInterval = request.ServiceInterval,
-                    LastServiceDate = DateTime.UtcNow,
+                    LastServiceDate = today,
                     LastServiceHours = request.Hours,
                     Status = status
                 }
@@ -104,7 +117,7 @@ namespace LegacyOps.Repositories
 
             if (request.Greased)
             {
-                var greasedDate = DateTimeOffset.UtcNow;
+                var greasedDate = DateTime.UtcNow;
                 await connection.ExecuteAsync(
                     "UPDATE machines SET lastGreased = @LastGreased WHERE id=@Id",
                     new { LastGreased = greasedDate, Id = id }
@@ -121,6 +134,17 @@ namespace LegacyOps.Repositories
                     new { LastServiceHours = request.LastServiceHours, LastServiceDate = serviceDate, Id = id }
                     );
             }
+        }
+
+        private static DateTime EnsureUtc(DateTime dt)
+        {
+            return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+        }
+
+        private void Normalize(MachineResponse machine)
+        {
+            machine.LastGreased = EnsureUtc(machine.LastGreased);
+            machine.LastServiceDate = EnsureUtc(machine.LastServiceDate);
         }
 
     }

@@ -57,7 +57,7 @@ namespace LegacyOps.Controllers
             return CreatedAtAction(nameof(GetPunchCardById), new { id = createdPunchCard?.Id }, createdPunchCard);
         }
 
-        [HttpPatch("{id}/clockout")]
+        [HttpPost("{id}/clockout")]
         public async Task<IActionResult> ClockOut(int id)
         {
             var punchCard = await _punchCardRepository.UpdateClockOutPunchCardAsync(id);
