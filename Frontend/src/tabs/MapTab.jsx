@@ -37,9 +37,9 @@ export default function MapTab({ jobs, auth }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ background: "#111c30", borderRadius: 10, border: "1px solid #1e2d47", padding: 16 }}>
         <SectionHeader title="Job Locations"/>
-        <div>Plans to rebuild this whole tab. Want to be able to hide jobs based on status. On each job there will be an option to store pictures.</div>
+        {/* <div>Plans to rebuild this whole tab. Want to be able to hide jobs based on status. On each job there will be an option to store pictures.</div>
         
-        <div>--------------------------------------------------------------------------</div>
+        <div>--------------------------------------------------------------------------</div> */}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
           <select
             value={selectedOption || "active"}
